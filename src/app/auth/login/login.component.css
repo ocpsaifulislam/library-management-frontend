@@ -1,0 +1,11 @@
+/* Links logic for context within the component */
+.forget-pass a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.forget-pass a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}

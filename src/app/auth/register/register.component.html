@@ -1,0 +1,152 @@
+<div class="container py-5 d-flex align-items-center min-vh-100">
+  <div class="row justify-content-center w-100 m-0">
+    <div class="col-lg-5 col-md-7 col-sm-10 px-0">
+
+      <div class="card border-0 shadow-lg auth-card position-relative mt-5">
+        
+        <div class="auth-avatar">
+          <img
+            src="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png"
+            alt="User"
+            class="user-image rounded-circle border border-3 border-white p-1 shadow-sm">
+        </div>
+
+        <div class="card-body p-4 p-sm-5 pt-5"> 
+
+          <form #regForm="ngForm" (ngSubmit)="onSubmit(regForm.valid)">
+            
+            <div class="mb-3">
+              <label for="firstName" class="form-label">First Name</label>
+              <input 
+                type="text" 
+                id="firstName" 
+                name="firstName"
+                class="form-control" 
+                [(ngModel)]="registerData.firstName" 
+                #firstNameRef="ngModel"
+                required
+                placeholder="Enter first name">
+              <div class="text-warning small mt-1" *ngIf="firstNameRef.touched && firstNameRef.invalid">
+                First name is required.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input 
+                type="text" 
+                id="lastName" 
+                name="lastName"
+                class="form-control" 
+                [(ngModel)]="registerData.lastName" 
+                #lastNameRef="ngModel"
+                required
+                placeholder="Enter last name">
+              <div class="text-warning small mt-1" *ngIf="lastNameRef.touched && lastNameRef.invalid">
+                Last name is required.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input 
+                type="text" 
+                id="username" 
+                name="username"
+                class="form-control" 
+                [(ngModel)]="registerData.username" 
+                #usernameRef="ngModel"
+                required
+                minlength="4"
+                placeholder="Enter username">
+              <div class="text-warning small mt-1" *ngIf="usernameRef.touched && usernameRef.invalid">
+                Username requires at least 4 characters.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="phoneNumber" class="form-label">Phone</label>
+              <input 
+                type="text" 
+                id="phoneNumber" 
+                name="phoneNumber"
+                class="form-control" 
+                [(ngModel)]="registerData.phoneNumber" 
+                #phoneRef="ngModel"
+                required
+                placeholder="+8801XXXXXXXXX">
+              <div class="text-warning small mt-1" *ngIf="phoneRef.touched && phoneRef.invalid">
+                Phone number is required.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email"
+                class="form-control" 
+                [(ngModel)]="registerData.email" 
+                #emailRef="ngModel"
+                required
+                email
+                placeholder="example@email.com">
+              <div class="text-warning small mt-1" *ngIf="emailRef.touched && emailRef.invalid">
+                Please provide a valid email.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="password"
+                class="form-control" 
+                [(ngModel)]="registerData.password" 
+                #passRef="ngModel"
+                required
+                minlength="6"
+                placeholder="********">
+              <div class="text-warning small mt-1" *ngIf="passRef.touched && passRef.invalid">
+                Password must be at least 6 characters.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="c_password" class="form-label">Confirm Password</label>
+              <input 
+                type="password" 
+                id="c_password" 
+                name="c_password"
+                class="form-control" 
+                [(ngModel)]="confirmPassword" 
+                #cPassRef="ngModel"
+                required
+                placeholder="********">
+              <div class="text-warning small mt-1" *ngIf="cPassRef.touched && registerData.password !== confirmPassword">
+                Passwords do not match.
+              </div>
+            </div>
+
+            <div class="d-grid mt-4 pt-2">
+              <button 
+                type="submit" 
+                class="btn btn-my fw-semibold py-2" 
+                [disabled]="isLoading || regForm.invalid || registerData.password !== confirmPassword">
+                {{ isLoading ? 'Registering...' : 'Register' }}
+              </button>
+            </div>
+
+            <div class="text-center mt-4 login">
+              Already have an account? <a routerLink="/login" class="ms-1">Login</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
