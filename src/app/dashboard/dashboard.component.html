@@ -1,0 +1,48 @@
+<div class="dashboard-container">
+  <!-- Left Sidebar Menu Navigation -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-brand">
+        📚 LIBRARY SYSTEM
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Exact required menu lists linked with routing -->
+        <a routerLink="/dashboard/home" routerLinkActive="active-link" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Analytics Dashboard</span>
+        </a>
+        <a routerLink="/dashboard/catalog" routerLinkActive="active-link" class="nav-item">
+          <span class="nav-icon">📖</span>
+          <span class="nav-text">Book Catalog</span>
+        </a>
+        <a routerLink="/dashboard/transactions" routerLinkActive="active-link" class="nav-item">
+          <span class="nav-icon">🔄</span>
+          <span class="nav-text">Issue / Return Ledger</span>
+        </a>
+      </nav>
+    </div>
+    <div class="sidebar-footer">
+      V1.0.0 © 2026 Admin Panel
+    </div>
+  </aside>
+
+  <!-- Main Workspace Window -->
+  <div class="main-window">
+    <!-- Top Bar Component View -->
+    <header class="top-bar">
+      <h1 class="top-bar-title">Management Workstation</h1>
+      <div class="top-bar-actions">
+        <span class="user-greeting">Welcome, Admin</span>
+        <!-- Top bar logout trigger execution button -->
+        <button (click)="onLogout()" class="logout-btn">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Nested View Router Outlet -->
+    <main class="content-viewport">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
