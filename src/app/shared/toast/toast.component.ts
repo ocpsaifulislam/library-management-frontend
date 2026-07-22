@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ToastService } from '../../core/services/toast.service'; // Ensure this relative path is correct
+import { CommonModule } from '@angular/common'; 
+import { ToastService } from 'src/app/core/services/toast.service';
 
 @Component({
   selector: 'app-toast',
@@ -10,13 +10,12 @@ import { ToastService } from '../../core/services/toast.service'; // Ensure this
   styleUrls: ['./toast.component.css']
 })
 export class ToastComponent {
-  // Exposes the streaming observable array to the html loop
   toasts$ = this.toastService.toasts$;
 
   constructor(private toastService: ToastService) {}
 
-  // Allows manual dismiss button interactions (click)="close(toast.id)"
-  close(id: number): void {
+  remove(id: number): void {
     this.toastService.remove(id);
   }
 }
+

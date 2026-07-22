@@ -1,87 +1,84 @@
-<div class="container py-5 d-flex align-items-center min-vh-100">
-  <div class="row justify-content-center w-100 m-0">
-    <div class="col-lg-4 col-md-6 col-sm-10 px-0">
+<div class="auth-wrapper vh-100 d-flex justify-content-center align-items-center overflow-hidden">
+  <div class="container">
+    <div class="row justify-content-center w-100 m-0">
+      <div class="col-xl-4 col-lg-5 col-md-7 col-sm-9 col-11 px-0">
 
-      <div class="card border-0 shadow-lg auth-card position-relative mt-5">
-        
-        <div class="auth-avatar">
-          <img 
-            src="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png" 
-            alt="user" 
-            class="user-image rounded-circle border border-3 border-white p-1 shadow-sm">
-        </div>
-
-        <div class="card-body p-4 p-sm-5 pt-5">
+        <div class="card border-0 shadow-lg auth-card position-relative">
           
-          <!-- Template-Driven Form (#loginForm="ngForm") -->
-          <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-            
-            <!-- Username Input -->
-            <div class="mb-3">
-              <label for="username" class="form-label">Username :</label>
-              <input 
-                type="text" 
-                name="username" 
-                [(ngModel)]="credentials.username" 
-                id="username" 
-                class="form-control" 
-                placeholder="Username"
-                required
-                #usernameInput="ngModel">
-                
-              <div class="text-warning small mt-1" *ngIf="usernameInput.touched && usernameInput.errors?.['required']">
-                Username is required.
-              </div>
-            </div>
-
-            <!-- Password Input -->
-            <div class="mb-3">
-              <label for="password" class="form-label">Password :</label>
-              <input 
-                type="password" 
-                name="password" 
-                [(ngModel)]="credentials.password" 
-                id="password" 
-                class="form-control" 
-                placeholder="********"
-                required
-                minlength="6"
-                #passwordInput="ngModel">
-              
-              <div class="text-end mt-1 forget-pass">
-                <a routerLink="/forget-password">Forget Password ?</a>
-              </div>
-              
-              <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['required']">
-                Password is required.
-              </div>
-              <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['minlength']">
-                Password must be at least 6 characters.
-              </div>
-            </div>
-
-            <!-- Error Message -->
-            <div class="alert alert-danger py-2 my-2" *ngIf="errorMessage">
-              {{ errorMessage }}
-            </div>
-
-            <!-- Submit Button -->
-            <div class="d-grid mt-4 pt-2">
-              <button type="submit" [disabled]="isLoading" class="btn btn-my fw-semibold py-2">
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {{ isLoading ? 'Logging in...' : 'Login' }}
-              </button>
-            </div>
-            
-          </form>
-
-          <div class="text-center mt-4 login">
-            Don't have an account? <a routerLink="/register" class="ms-1">Register</a> here.
+          <!-- Avatar Icon -->
+          <div class="auth-avatar">
+            <img 
+              src="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png" 
+              alt="user" 
+              class="user-image rounded-circle border border-3 border-white p-1 shadow-sm">
           </div>
 
-        </div>
-      </div>
+          <div class="card-body p-4 p-sm-5 pt-5">
+            
+            <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+              
+              <!-- Username Input -->
+              <div class="mb-3">
+                <label for="username" class="form-label">Username :</label>
+                <input 
+                  type="text" 
+                  name="username" 
+                  [(ngModel)]="credentials.username" 
+                  id="username" 
+                  class="form-control" 
+                  placeholder="Username"
+                  required
+                  #usernameInput="ngModel">
+                  
+                <div class="text-warning small mt-1" *ngIf="usernameInput.touched && usernameInput.errors?.['required']">
+                  Username is required.
+                </div>
+              </div>
 
+              <!-- Password Input -->
+              <div class="mb-3">
+                <label for="password" class="form-label">Password :</label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  [(ngModel)]="credentials.password" 
+                  id="password" 
+                  class="form-control" 
+                  placeholder="********"
+                  required
+                  minlength="6"
+                  #passwordInput="ngModel">
+                
+                <div class="text-end mt-1 forget-pass">
+                  <a routerLink="/forget-password">Forget Password ?</a>
+                </div>
+                
+                <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['required']">
+                  Password is required.
+                </div>
+                <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['minlength']">
+                  Password must be at least 6 characters.
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid mt-4 pt-2">
+                <button type="submit" [disabled]="isLoading" class="btn btn-my fw-semibold py-2">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isLoading ? 'Logging in...' : 'Login' }}
+                </button>
+              </div>
+              
+            </form>
+
+            <div class="text-center mt-4 login">
+              Don't have an account? <a routerLink="/register" class="ms-1">Register</a> here.
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>

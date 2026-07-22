@@ -1,15 +1,22 @@
-<div class="toast-container">
-  <div
-    *ngFor="let toast of toasts$ | async"
-    class="toast-item"
-    [ngClass]="toast.type"
-  >
-    <span class="toast-icon">
-      <span *ngIf="toast.type === 'success'">✔</span>
-      <span *ngIf="toast.type === 'error'">✖</span>
-      <span *ngIf="toast.type === 'info'">ℹ</span>
-    </span>
-    <span class="toast-message">{{ toast.message }}</span>
-    <button class="toast-close" (click)="close(toast.id)">×</button>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+  <div 
+    *ngFor="let toast of toasts$ | async" 
+    class="toast show align-items-center text-white border-0 mb-2 shadow-lg"
+    [style.background-color]="toast.type === 'success' ? '#2e7d32' : (toast.type === 'error' ? '#d32f2f' : '#0288d1')"
+    role="alert" 
+    aria-live="assertive" 
+    aria-atomic="true">
+    
+    <div class="d-flex align-items-center justify-content-between p-2">
+      <div class="toast-body fw-medium">
+        {{ toast.message }}
+      </div>
+      <button 
+        type="button" 
+        class="btn-close btn-close-white me-2" 
+        (click)="remove(toast.id)" 
+        aria-label="Close"></button>
+    </div>
+
   </div>
 </div>

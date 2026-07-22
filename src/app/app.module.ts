@@ -5,13 +5,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ToastComponent } from './shared/toast/toast.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './home/home.component'; 
 
 @NgModule({
   declarations: [
     // Leave this empty! Standalone components do not get declared here.
   
-    HomeComponent
+    HomeComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,
