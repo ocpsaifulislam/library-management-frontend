@@ -51,7 +51,7 @@ export class LoginComponent {
           // 2. Brief 800ms delay so user can see green toast before route changes
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
-          }, 800);
+          }, 400);
 
         } else {
           this.toast.error(res?.message || 'Login failed.');
