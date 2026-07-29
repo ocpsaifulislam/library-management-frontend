@@ -2,82 +2,69 @@
   <div class="container">
     <div class="row justify-content-center w-100 m-0">
       <div class="col-xl-4 col-lg-5 col-md-7 col-sm-9 col-11 px-0">
-
         <div class="card border-0 shadow-lg auth-card position-relative">
-          
-          <!-- Avatar Icon -->
+          <!-- Avatar -->
           <div class="auth-avatar">
-            <img 
-              src="https://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png" 
-              alt="user" 
-              class="user-image rounded-circle border border-3 border-white p-1 shadow-sm">
+            <img src="/assets/images/register_people.png" alt="User"
+              class="user-image rounded-circle border border-3 border-white p-1 shadow-sm" />
           </div>
-
           <div class="card-body p-4 p-sm-5 pt-5">
-            
-            <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-              
-              <!-- Username Input -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off">
+
+              <!-- Username -->
               <div class="mb-3">
-                <label for="username" class="form-label">Username :</label>
-                <input 
-                  type="text" 
-                  name="username" 
-                  [(ngModel)]="credentials.username" 
-                  id="username" 
-                  class="form-control" 
-                  placeholder="Username"
-                  required
-                  #usernameInput="ngModel">
-                  
-                <div class="text-warning small mt-1" *ngIf="usernameInput.touched && usernameInput.errors?.['required']">
-                  Username is required.
+                <label for="username" class="form-label"> Username </label>
+                <input id="username" type="text" class="form-control" placeholder="Enter username"
+                  formControlName="username" autocomplete="username" />
+
+                <div class="text-warning small mt-1" *ngIf="f['username'].touched && f['username'].errors ">
+                  <span *ngIf="f['username'].errors['required']"> Username is required. </span>
                 </div>
               </div>
 
-              <!-- Password Input -->
+              <!-- Password -->
               <div class="mb-3">
-                <label for="password" class="form-label">Password :</label>
-                <input 
-                  type="password" 
-                  name="password" 
-                  [(ngModel)]="credentials.password" 
-                  id="password" 
-                  class="form-control" 
-                  placeholder="********"
-                  required
-                  minlength="6"
-                  #passwordInput="ngModel">
-                
-                <div class="text-end mt-1 forget-pass">
-                  <a routerLink="/forget-password">Forget Password ?</a>
+                <label for="password" class="form-label"> Password </label>
+                <input id="password" type="password" class="form-control" placeholder="Enter password"
+                  formControlName="password" autocomplete="current-password" />
+
+                <div class="text-warning small mt-1" *ngIf="
+                  f['password'].touched &&
+                  f['password'].errors
+                  ">
+
+                  <span *ngIf="f['password'].errors['required']"> Password is required. </span>
+                  <span *ngIf="f['password'].errors['minlength']"> Password must be at least 6 characters. </span>
                 </div>
-                
-                <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['required']">
-                  Password is required.
-                </div>
-                <div class="text-warning small mt-1" *ngIf="passwordInput.touched && passwordInput.errors?.['minlength']">
-                  Password must be at least 6 characters.
+
+                <!-- Forget Password -->
+                <div class="text-end mt-2 forget-pass">
+                  <a routerLink="/forget-password"> Forget Password? </a>
                 </div>
               </div>
 
-              <!-- Submit Button -->
-              <div class="d-grid mt-4 pt-2">
-                <button type="submit" [disabled]="isLoading" class="btn btn-my fw-semibold py-2">
-                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  {{ isLoading ? 'Logging in...' : 'Login' }}
+              <!-- Login Button -->
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-my fw-semibold py-2" [disabled]="
+                    loginForm.invalid ||
+                    isLoading
+                  ">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"> </span>
+                  {{
+                  isLoading
+                  ? 'Logging in...'
+                  : 'Login'
+                  }}
                 </button>
               </div>
-              
             </form>
 
-            <div class="text-center mt-4 login">
-              Don't have an account? <a routerLink="/register" class="ms-1">Register</a> here.
+            <!-- Register Link -->
+            <div class="text-center mt-4 login"> Don't have an account?
+              <a routerLink="/register" class="ms-1"> Register </a> here.
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>

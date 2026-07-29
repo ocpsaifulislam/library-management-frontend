@@ -1,69 +1,97 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+
 import { Router, RouterLink } from '@angular/router';
+
 import { AuthService } from '../../core/services/auth.service';
-import { ToastService } from 'src/app/core/services/toast.service';
+import { ToastService } from '../../core/services/toast.service';
+import { LoginRequest } from '../../core/models/auth.model';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  credentials = {
-    username: '',
-    password: ''
-  };
+  loginForm!: FormGroup;
 
   isLoading = false;
 
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toast: ToastService
-  ) { }
+    private toast: ToastService,
+  ) {
+    this.createLoginForm();
+  }
 
-  onSubmit(form: NgForm): void {
-    if (form.invalid) {
-      Object.keys(form.controls).forEach(key => {
-        form.controls[key].markAsTouched();
-      });
-      
+  private createLoginForm(): void {
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
+
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+
       this.toast.error('Please enter valid credentials.');
+
       return;
     }
 
     this.isLoading = true;
 
-    this.authService.login(this.credentials).subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
-        
-        if (res && (res.token || res.success)) {
-          this.authService.saveToken(res.token);
-          
-          // 1. Trigger green success toast
-          this.toast.success(res.message || 'Login successful!');
-          
-          // 2. Brief 800ms delay so user can see green toast before route changes
-          setTimeout(() => {
-            this.router.navigate(['/dashboard']);
-          }, 400);
+    const loginRequest: LoginRequest = {
+      username: this.loginForm.value.username,
 
-        } else {
-          this.toast.error(res?.message || 'Login failed.');
-        }
-      },
-      error: (err: any) => {
-        this.isLoading = false;
-        
-        // Trigger red error toast
-        const errorMsg = err.error?.message || 'Invalid username or password.';
-        this.toast.error(errorMsg);
-      }
-    });
+      password: this.loginForm.value.password,
+    };
+
+    this.authService
+      .login(loginRequest)
+
+      .subscribe({
+        next: (response: any) => {
+          this.isLoading = false;
+
+          if (response?.token) {
+            this.authService.saveToken(response.token);
+
+            this.toast.success(response.message ?? 'Login successful!');
+
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.toast.error(response?.message ?? 'Login failed.');
+          }
+        },
+
+        error: (err: any) => {
+          this.isLoading = false;
+
+          const message =
+            err?.error?.message ?? 'Invalid username or password.';
+
+          this.toast.error(message);
+        },
+      });
   }
 }

@@ -58,11 +58,11 @@
 }
 
 /* Footer / Login Link */
-.login {
+.register {
   color: #ffffff;
 }
 
-.login a {
+.register a {
   color: #d39e00;
   font-weight: 600;
   text-decoration: none;

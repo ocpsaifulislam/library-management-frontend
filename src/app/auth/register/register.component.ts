@@ -1,71 +1,132 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+
 import { Router, RouterLink } from '@angular/router';
+
 import { AuthService } from '../../core/services/auth.service';
-import { RegisterRequest } from '../../core/models/auth.model';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { RegisterRequest } from '../../core/models/auth.model';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], 
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
-export class RegisterComponent { 
-  registerData: RegisterRequest = {
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    phoneNumber: '',
-    password: ''
-  };
+export class RegisterComponent {
+  registerForm!: FormGroup;
 
-  confirmPassword = ''; 
   isLoading = false;
 
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toast: ToastService
-  ) {}
+    private toast: ToastService,
+  ) {
+    this.createRegisterForm();
+  }
 
-  onSubmit(formIsValid: boolean | null): void {
-    if (!formIsValid || this.registerData.password !== this.confirmPassword) {
-      this.toast.error('Please fix form validation errors before registering.');
+  private createRegisterForm(): void {
+    this.registerForm = this.fb.group(
+      {
+        firstName: ['', [Validators.required]],
+
+        lastName: ['', [Validators.required]],
+
+        username: ['', [Validators.required, Validators.minLength(4)]],
+
+        phoneNumber: ['', [Validators.required]],
+
+        email: ['', [Validators.required, Validators.email]],
+
+        password: ['', [Validators.required, Validators.minLength(6)]],
+
+        confirmPassword: ['', [Validators.required]],
+      },
+
+      {
+        validators: this.passwordMatchValidator(),
+      },
+    );
+  }
+
+  private passwordMatchValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const password = control.get('password')?.value;
+
+      const confirmPassword = control.get('confirmPassword')?.value;
+
+      if (password && confirmPassword && password !== confirmPassword) {
+        return {
+          passwordMismatch: true,
+        };
+      }
+
+      return null;
+    };
+  }
+
+  get f() {
+    return this.registerForm.controls;
+  }
+
+  onSubmit(): void {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+
+      this.toast.error('Please fix validation errors.');
+
       return;
     }
 
     this.isLoading = true;
- 
-    this.authService.register(this.registerData).subscribe({
+
+    const formValue = this.registerForm.getRawValue();
+
+    const requestData: RegisterRequest = {
+      firstName: formValue.firstName,
+
+      lastName: formValue.lastName,
+
+      username: formValue.username,
+
+      email: formValue.email,
+
+      phoneNumber: formValue.phoneNumber,
+
+      password: formValue.password,
+    };
+
+    this.authService.register(requestData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        
-        // Check if status is 201 or success property is true
-        if (response && (response.status === 201 || response.success === true)) {
-          
-          // 1. Show the dynamic success message directly from your API response
-          this.toast.success(response.message || 'Registration successful!');
-          
-          // 2. Redirect back to login page
+
+        if (response?.success === true || response?.status === 201) {
+          this.toast.success(response.message ?? 'Registration successful!');
+
           this.router.navigate(['/login']);
-          
         } else {
-          // Handles explicit backend failure states disguised within a 200 OK handler
-          const fallbackMsg = response.message || 'Registration failed.';
-          this.toast.error(fallbackMsg);
+          this.toast.error(response.message ?? 'Registration failed');
         }
       },
+
       error: (err) => {
         this.isLoading = false;
-        
-        // Collects server validation errors or network infrastructure drop-outs
-        const apiErrorMsg = err.error?.message || err.message || 'Registration encountered an error.';
-        this.toast.error(apiErrorMsg);
-      }
+
+        this.toast.error(err.error?.message ?? 'Server error occurred');
+      },
     });
   }
 }
