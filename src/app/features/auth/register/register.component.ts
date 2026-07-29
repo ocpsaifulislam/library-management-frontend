@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import {
   AbstractControl,
   FormBuilder,
@@ -10,12 +9,13 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
-import { ToastService } from 'src/app/core/services/toast.service';
-import { RegisterRequest } from '../../core/models/auth.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
+
+import { RegisterRequest } from '../../../core/models/register-request';
+import { RegisterResponse } from '../../../core/models/register-response';
 
 @Component({
   selector: 'app-register',
@@ -25,56 +25,43 @@ import { RegisterRequest } from '../../core/models/auth.model';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  registerForm!: FormGroup;
-
+  registerForm: FormGroup;
   isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toast: ToastService,
+    private toast: ToastService
   ) {
-    this.createRegisterForm();
+    this.registerForm = this.createRegisterForm();
   }
 
-  private createRegisterForm(): void {
-    this.registerForm = this.fb.group(
+  private createRegisterForm(): FormGroup {
+    return this.fb.group(
       {
-        firstName: ['', [Validators.required]],
-
-        lastName: ['', [Validators.required]],
-
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
         username: ['', [Validators.required, Validators.minLength(4)]],
-
-        phoneNumber: ['', [Validators.required]],
-
+        phoneNumber: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-
         password: ['', [Validators.required, Validators.minLength(6)]],
-
-        confirmPassword: ['', [Validators.required]],
+        confirmPassword: ['', Validators.required],
       },
-
       {
         validators: this.passwordMatchValidator(),
-      },
+      }
     );
   }
 
   private passwordMatchValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.get('password')?.value;
-
       const confirmPassword = control.get('confirmPassword')?.value;
 
-      if (password && confirmPassword && password !== confirmPassword) {
-        return {
-          passwordMismatch: true,
-        };
-      }
-
-      return null;
+      return password === confirmPassword
+        ? null
+        : { passwordMismatch: true };
     };
   }
 
@@ -85,47 +72,44 @@ export class RegisterComponent {
   onSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
-
-      this.toast.error('Please fix validation errors.');
-
+      this.toast.error('Please fix the validation errors.');
       return;
     }
 
     this.isLoading = true;
 
-    const formValue = this.registerForm.getRawValue();
+    const formValue = this.registerForm.value;
 
     const requestData: RegisterRequest = {
-      firstName: formValue.firstName,
-
-      lastName: formValue.lastName,
-
-      username: formValue.username,
-
-      email: formValue.email,
-
-      phoneNumber: formValue.phoneNumber,
-
-      password: formValue.password,
+      firstName: formValue.firstName!,
+      lastName: formValue.lastName!,
+      username: formValue.username!,
+      email: formValue.email!,
+      phoneNumber: formValue.phoneNumber!,
+      password: formValue.password!,
     };
 
     this.authService.register(requestData).subscribe({
-      next: (response: any) => {
-        this.isLoading = false;
-
-        if (response?.success === true || response?.status === 201) {
-          this.toast.success(response.message ?? 'Registration successful!');
-
+      next: (response: RegisterResponse) => {
+        if (response.success) {
+          this.toast.success(response.message || 'Registration successful.');
           this.router.navigate(['/login']);
         } else {
-          this.toast.error(response.message ?? 'Registration failed');
+          this.toast.error(response.message || 'Registration failed.');
         }
       },
 
-      error: (err) => {
-        this.isLoading = false;
+      error: (error) => {
+        const message =
+          error?.error?.message ||
+          error?.message ||
+          'An unexpected error occurred.';
 
-        this.toast.error(err.error?.message ?? 'Server error occurred');
+        this.toast.error(message);
+      },
+
+      complete: () => {
+        this.isLoading = false;
       },
     });
   }

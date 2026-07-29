@@ -1,38 +1,72 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../models/auth.model';
+
 import { environment } from '../../../environments/environment';
 
+import { RegisterRequest } from '../models/register-request';
+import { RegisterResponse } from '../models/register-response';
+import { LoginRequest } from '../models/login-request';
+import { LoginResponse } from '../models/login-response';
+
+import { TokenService } from './token.service';
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly baseUrl = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) {}
 
+  /**
+   * Register User
+   */
   register(data: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, data);
+    return this.http.post<RegisterResponse>(
+      `${this.baseUrl}/register`,
+      data
+    );
   }
 
+  /**
+   * Login User
+   */
   login(data: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, data);
+    return this.http.post<LoginResponse>(
+      `${this.baseUrl}/login`,
+      data
+    );
   }
 
+  /**
+   * Save JWT Access Token
+   */
   saveToken(token: string): void {
-    localStorage.setItem('token', token);
+    this.tokenService.setToken(token);
   }
 
+  /**
+   * Get JWT Access Token
+   */
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.tokenService.getToken();
   }
 
+  /**
+   * Check Login Status
+   */
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.tokenService.isLoggedIn();
   }
 
+  /**
+   * Logout User
+   */
   logout(): void {
-    localStorage.removeItem('token');
+    this.tokenService.clear();
   }
 }
