@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 
@@ -10,6 +11,10 @@ import { LoginRequest } from '../models/login-request';
 import { LoginResponse } from '../models/login-response';
 
 import { TokenService } from './token.service';
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -36,14 +41,27 @@ export class AuthService {
    * Login User
    */
   login(data: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      `${this.baseUrl}/login`,
-      data
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, data).pipe(
+      tap((response) => {
+        // Automatically store access & refresh tokens on successful login
+        if (response.body.accessToken) {
+          this.tokenService.setToken(response.body.accessToken);
+        }
+        if (response.body.refreshToken) {
+          this.tokenService.setRefreshToken(response.body .refreshToken);
+        }
+        if (response.body.firstName) {
+          this.tokenService.setFirstName(response.body.firstName);
+        }
+        if (response.body.lastName) {
+          this.tokenService.setLastName(response.body.lastName);
+        }
+      })
     );
   }
 
   /**
-   * Save JWT Access Token
+   * Save JWT Access Token Manually
    */
   saveToken(token: string): void {
     this.tokenService.setToken(token);
@@ -64,9 +82,28 @@ export class AuthService {
   }
 
   /**
-   * Logout User
+   * Logout User (Sends { "refreshToken": "..." } to Spring Backend)
    */
-  logout(): void {
+  logout(): Observable<void> {
+    const refreshToken = this.tokenService.getRefreshToken() || '';
+    const payload: RefreshTokenRequest = { refreshToken };
+
+    return this.http.post<void>(`${this.baseUrl}/logout`, payload).pipe(
+      tap(() => {
+        this.clearLocalSession();
+      }),
+      catchError((error) => {
+        console.error('Logout error, clearing session locally:', error);
+        this.clearLocalSession();
+        return of(void 0);
+      })
+    );
+  }
+
+  /**
+   * Clear Local Tokens/Session
+   */
+  clearLocalSession(): void {
     this.tokenService.clear();
   }
 }

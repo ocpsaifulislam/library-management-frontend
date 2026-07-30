@@ -81,7 +81,7 @@ export class LoginComponent {
 
           this.toast.success(response.message);
 
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/home']);
         } else {
           this.toast.error(response.message || 'Login failed.');
         }
