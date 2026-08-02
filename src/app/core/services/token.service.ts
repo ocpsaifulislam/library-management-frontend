@@ -1,59 +1,75 @@
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
+import { STORAGE_KEYS } from '../constants/storage-keys';
 
 interface JwtPayload {
-  exp: number;
+  exp?: number;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenService {
-  private readonly TOKEN_KEY = 'access_token';
-  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
-  private readonly FIRST_NAME_KEY = 'first_name';
-  private readonly LAST_NAME_KEY = 'last_name';
+
+  // ============================================================
+  // Access Token
+  // ============================================================
 
   setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   }
 
+  // ============================================================
+  // Refresh Token
+  // ============================================================
+
   setRefreshToken(token: string): void {
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, token);
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
   }
 
-  setFirstName(token: string): void {
-    localStorage.setItem(this.FIRST_NAME_KEY, token);
+  // ============================================================
+  // User Information
+  // ============================================================
+
+  setFirstName(firstName: string): void {
+    localStorage.setItem(STORAGE_KEYS.FIRST_NAME, firstName);
   }
 
   getFirstName(): string | null {
-    return localStorage.getItem(this.FIRST_NAME_KEY);
+    return localStorage.getItem(STORAGE_KEYS.FIRST_NAME);
   }
 
-  setLastName(token: string): void {
-    localStorage.setItem(this.LAST_NAME_KEY, token);
+  setLastName(lastName: string): void {
+    localStorage.setItem(STORAGE_KEYS.LAST_NAME, lastName);
   }
 
   getLastName(): string | null {
-    return localStorage.getItem(this.LAST_NAME_KEY);
+    return localStorage.getItem(STORAGE_KEYS.LAST_NAME);
   }
 
+  // ============================================================
+  // Clear Authentication Data
+  // ============================================================
+
   clear(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.FIRST_NAME_KEY);
-    localStorage.removeItem(this.LAST_NAME_KEY);
-    // Also remove loglevel from local storage if desired
+    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.FIRST_NAME);
+    localStorage.removeItem(STORAGE_KEYS.LAST_NAME);
     localStorage.removeItem('loglevel');
   }
+
+  // ============================================================
+  // Authentication Status
+  // ============================================================
 
   isLoggedIn(): boolean {
     const token = this.getToken();
@@ -64,6 +80,10 @@ export class TokenService {
 
     return !this.isTokenExpired();
   }
+
+  // ============================================================
+  // JWT Expiration
+  // ============================================================
 
   isTokenExpired(): boolean {
     const token = this.getToken();
@@ -79,7 +99,8 @@ export class TokenService {
         return true;
       }
 
-      return decoded.exp * 1000 < Date.now();
+      return decoded.exp * 1000 <= Date.now();
+
     } catch {
       return true;
     }
